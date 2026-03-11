@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SessionDock - Session Manager</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="title">SessionDock</h1>
+            <p class="subtitle">Multi-Account Manager</p>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <button id="createSessionBtn" class="btn btn-primary">
+                <span class="pill-icon">+</span> New Session
+            </button>
+            <button id="importBtn" class="btn btn-secondary" title="Import sessions from file">
+                ⬆ Import
+            </button>
+            <button id="exportBtn" class="btn btn-secondary" title="Export all sessions">
+                ⬇ Export
+            </button>
+        </div>
+
+        <!-- Quick Info -->
+        <div class="info-panel">
+            <div class="info-item">
+                <span class="info-label">Active Sessions:</span>
+                <span class="info-value" id="activeSessionCount">0</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Open Tabs:</span>
+                <span class="info-value" id="openTabCount">0</span>
+            </div>
+        </div>
+
+        <!-- Sessions List -->
+        <div class="sessions-section">
+            <h2 class="section-title">Sessions</h2>
+            <div id="sessionsList" class="sessions-list">
+                <div class="empty-state">
+                    <p>No sessions yet</p>
+                    <p class="empty-hint">Create a new session to get started</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <a href="#" id="settingsLink" class="footer-link">⚙ Settings</a>
+            <a href="#" id="helpLink" class="footer-link">? Help</a>
+        </div>
+    </div>
+
+    <!-- Modal: Create/Edit Session -->
+    <div id="sessionModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Create New Session</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="sessionForm">
+                <div class="form-group">
+                    <label for="sessionName">Session Name</label>
+                    <input type="text" id="sessionName" placeholder="e.g., Personal LinkedIn" required>
+                </div>
+                <div class="form-group">
+                    <label for="targetDomain">Target Domain (Optional)</label>
+                    <input type="text" id="targetDomain" placeholder="e.g., linkedin.com or https://linkedin.com">
+                    <small>Leave empty to apply to all domains. Enter domain or full URL.</small>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="modalCancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Session</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Confirmation -->
+    <div id="confirmModal" class="modal hidden">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2 id="confirmTitle">Confirm Action</h2>
+            </div>
+            <p id="confirmMessage"></p>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="confirmCancelBtn">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmOkBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
