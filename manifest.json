@@ -7,14 +7,24 @@
     "cookies",
     "storage",
     "tabs",
-    "scripting",
-    "webNavigation"
+    "webRequest",
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess"
   ],
   "host_permissions": [
     "<all_urls>"
   ],
   "background": {
     "service_worker": "background.js"
+  },
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "rules",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
   },
   "content_scripts": [
     {

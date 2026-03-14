@@ -14,7 +14,6 @@ const sessionModal = document.getElementById('sessionModal');
 const confirmModal = document.getElementById('confirmModal');
 const sessionForm = document.getElementById('sessionForm');
 const sessionNameInput = document.getElementById('sessionName');
-const targetDomainInput = document.getElementById('targetDomain');
 const modalCancelBtn = document.getElementById('modalCancelBtn');
 const modalCloseBtn = document.querySelector('.modal-close');
 const toast = document.getElementById('toast');
@@ -26,6 +25,39 @@ const openTabCount = document.getElementById('openTabCount');
 // ============================================================================
 let sessions = {};
 let editingSessionId = null;
+let userHasEditedDomain = false;
+
+// Common service to domain mapping
+const DOMAIN_MAPPING = {
+  'github': 'github.com',
+  'linkedin': 'linkedin.com',
+  'google': 'google.com',
+  'gmail': 'gmail.com',
+  'facebook': 'facebook.com',
+  'meta': 'facebook.com',
+  'twitter': 'twitter.com',
+  'x': 'x.com',
+  'instagram': 'instagram.com',
+  'reddit': 'reddit.com',
+  'amazon': 'amazon.com',
+  'netflix': 'netflix.com',
+  'microsoft': 'microsoft.com',
+  'outlook': 'outlook.com',
+  'apple': 'apple.com',
+  'youtube': 'youtube.com',
+  'discord': 'discord.com',
+  'slack': 'slack.com',
+  'chatgpt': 'chatgpt.com',
+  'openai': 'openai.com',
+  'claude': 'anthropic.com',
+  'gemini': 'gemini.google.com',
+  'binance': 'binance.com',
+  'coinbase': 'coinbase.com',
+  'upstox': 'upstox.com',
+  'kite': 'kite.zerodha.com',
+  'zerodha': 'kite.zerodha.com',
+  'canva': 'canva.com'
+};
 
 // ============================================================================
 // Utility Functions
@@ -79,7 +111,7 @@ async function loadSessions() {
  * Render sessions list
  */
 function renderSessions() {
-  const sessionIds = Object.keys(sessions);
+  const sessionIds = Object.keys(sessions).filter(id => id !== '__default__');
   
   if (sessionIds.length === 0) {
     sessionsList.innerHTML = `
@@ -113,7 +145,7 @@ function createSessionCard(sessionId) {
         <div class="session-color-badge" style="background-color: ${session.color}"></div>
         <div class="session-info">
           <h3 class="session-name">${escapeHtml(session.name)}</h3>
-          <p class="session-domain">${domain}</p>
+          <p class="session-domain">Isolated Tab Session</p>
         </div>
       </div>
       
@@ -243,7 +275,6 @@ function handleEditSession(sessionId) {
   
   document.getElementById('modalTitle').textContent = 'Edit Session';
   sessionNameInput.value = session.name;
-  targetDomainInput.value = session.targetDomain || '';
   sessionForm.querySelector('button[type="submit"]').textContent = 'Save Changes';
   
   openModal();
@@ -294,6 +325,7 @@ function closeModal() {
   sessionModal.classList.add('hidden');
   resetForm();
   editingSessionId = null;
+  userHasEditedDomain = false;
 }
 
 /**
@@ -303,6 +335,7 @@ function resetForm() {
   sessionForm.reset();
   document.getElementById('modalTitle').textContent = 'Create New Session';
   sessionForm.querySelector('button[type="submit"]').textContent = 'Create Session';
+  userHasEditedDomain = false;
 }
 
 /**
@@ -344,12 +377,29 @@ document.getElementById('confirmCancelBtn').addEventListener('click', () => {
   confirmModal.classList.add('hidden');
 });
 
+// Auto-fill domain based on name
+sessionNameInput.addEventListener('input', () => {
+  if (editingSessionId || userHasEditedDomain) return;
+  
+  const name = sessionNameInput.value.toLowerCase().trim();
+  
+  // Try to find a match in the mapping
+  for (const [key, domain] of Object.entries(DOMAIN_MAPPING)) {
+    if (name.includes(key)) {
+      targetDomainInput.value = domain;
+      return;
+    }
+  }
+});
+
+// Track if user manually edits domain
+// (Removed)
+
 // Form submission
 sessionForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   
   const sessionName = sessionNameInput.value.trim();
-  const targetDomain = targetDomainInput.value.trim() || null;
   
   if (!sessionName) {
     showToast('Session name cannot be empty', 'error');
@@ -369,8 +419,7 @@ sessionForm.addEventListener('submit', async (e) => {
       // Create new session
       await sendMessageToBackground({
         action: 'createSession',
-        sessionName,
-        targetDomain
+        sessionName
       });
       showToast('Session created successfully', 'success');
     }
